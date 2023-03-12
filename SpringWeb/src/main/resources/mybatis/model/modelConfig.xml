@@ -7,7 +7,7 @@
         <setting name="jdbcTypeForNull" value="NULL"/>
     </settings>
 <typeAliases>
-		<typeAlias type="com.spring.web.Login.VO.LoginVO" alias="LoginVO" />		
+		<typeAlias type="com.spring.web.Member.VO.MemberVO" alias="MemberVO" />		
 		
 </typeAliases>       
 </configuration>

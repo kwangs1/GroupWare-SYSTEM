@@ -45,5 +45,10 @@
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
+	<!-- session Timeout -->
+	<session-config>
+    	<session-timeout>1</session-timeout>
+	</session-config>
 <absolute-ordering />
 </web-app>
