@@ -18,6 +18,7 @@
 		<result property="namujiAddress" column="namujiAddress" />
 	</resultMap>
 
+<!-- 회원가입 -->
 <insert id = 'join' parameterType="MemberVO">
 	<selectKey keyProperty="sabun" order="BEFORE" resultType="String">
 		select sabun_seq.nextval from dual
@@ -28,6 +29,7 @@
 ]]>
 </insert>
 
+<!-- 로그인 -->
 <select id="login" resultType="MemberVO">
 	<![CDATA[
 		select *
@@ -35,5 +37,23 @@
 		where id = #{id}
 		and pw = #{pw}
 	]]>
+</select>
+
+<!-- 아이디 중복검사 -->
+<select id="idcheck" resultType="int">
+<![CDATA[
+	select count(*)
+	from hr_user
+	where id = #{id}
+]]>
+</select>
+
+<!-- 이름체크 -->
+<select id="namecheck" resultType="int">
+<![CDATA[
+	select count(*)
+	from hr_user
+	where name = #{name}
+]]>
 </select>
 </mapper>

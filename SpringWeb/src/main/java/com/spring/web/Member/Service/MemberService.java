@@ -8,4 +8,8 @@ public interface MemberService {
 	public void join(MemberVO member);
 	//로그인
 	public MemberVO login(MemberVO member);
+	//id 중복검사
+	int idcheck(String id);
+	//이름체크
+	int namecheck(String name);
 }

@@ -18,14 +18,27 @@ public class MemberDAOImpl implements MemberDAO{
 	//회원가입
 	@Override
 	public void join(MemberVO member) {
-		log.info("join dao");
+		//log.info("join dao");
 		session.insert("mapper.Member.join",member);
 	}
 	
 	//로그인
 	@Override
 	public MemberVO login(MemberVO member) {
-		log.info("login dao");
+		//log.info("login dao");
 		return session.selectOne("mapper.Member.login",member);
+	}
+	
+	//id 중복검사
+	@Override
+	public int idcheck(String id) {
+		//log.info("idcheck dao");
+		return session.selectOne("mapper.Member.idcheck",id);
+	}
+	
+	//이름 체크
+	@Override
+	public int namecheck(String name) {
+		return session.selectOne("mapper.Member.namecheck",name);
 	}
 }

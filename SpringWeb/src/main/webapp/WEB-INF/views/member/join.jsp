@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:set var="path" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,7 +23,31 @@
   width: 250px;
   hight: 400px;
 }
+</style>
 
+<!-- 유효성 검사 -->
+<style>
+.id_input_re_1 {
+	color: green;
+	display: none;
+}
+.id_input_re_2 {
+	color: red;
+	display: none;
+}
+
+.name_input_re_1 {
+	color: green;
+	display: none;
+}
+.name_input_re_2 {
+	color: red;
+	display: none;
+}
+.mail_input_re_1 {
+	color: red;
+	display: none;
+}
 </style>
 </head>
 <body>
@@ -30,7 +56,9 @@
 <div class="container">
 	<h1>어서오세요! 회원가입 페이지 입니다.</h1>
 	<div>
-		<input type='text' name="id" placeholder="아이디"/>
+		<input type='text' name="id" class="id_input" placeholder="아이디"/>
+		 <span class="id_input_re_1">사용 가능한 아이디입니다.</span>
+		 <span class="id_input_re_2">아이디가 이미 존재합니다.</span>
 	</div>
 	
 	<div>
@@ -38,11 +66,15 @@
 	</div>
 	
 	<div>
-		<input type='text' name="name" placeholder="이름"/>
+		<input type='text' name="name" class="name_input" placeholder="이름"/>
+		 <span class="name_input_re_1">사용 가능합니다.</span>
+		 <span class="name_input_re_2">중복된 이름이 있습니다.</span>
 	</div>	
 	
 	<div>
-		<input type='text' name="email" placeholder="이메일"/>
+		<input type='text' name="email" class="mail_input" placeholder="이메일"/>
+		<span class="mail_input_box_warn"></span>
+		<div class="mail_check_button">전송</div>
 	</div>
 	
 	<div>
@@ -66,12 +98,132 @@
 </div>
 </form>
 
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
 function join(){
 	submit();
 }
 
+var idCheck = false;
+var nameCheck = false;
+var mailCheck = false;
+
+//id 중복검사 ajax
+$('.id_input').on('propertychange change keyup paste input',function (){
+    var id = $('.id_input').val();
+    
+    if (id === '') { // 입력값이 비어있는 경우
+        $('.id_input_re_1').css('display', 'none');
+        $('.id_input_re_2').css('display', 'none');
+        idCheck = false; // 중복 검사 결과 초기화
+        return; // 중복 검사를 수행하지 않고 종료
+    }
+    
+    $.ajax({
+        type : 'post',
+        url : '${path}/member/idcheck',
+        data : {id : id},
+        success : function(result){ // 이 부분도 수정
+            if(result == 'success'){
+                $('.id_input_re_1').css('display','block');
+                $('.id_input_re_2').css('display','none');
+                idCheck = true;
+            }else{
+                $('.id_input_re_2').css('display','block');
+                $('.id_input_re_1').css('display','none');
+                idCheck = false;
+            }       
+        },//end success
+        error : function(error){
+            console.log(error);
+        }
+        
+    });//end ajax
+});
+
+//이름 검사 ajax
+$('.name_input').on('propertychange change keyup paste input',function(){
+	var name = $('.name_input').val();
+	
+	if(name === ''){
+        $('.name_input_re_1').css('display', 'none');
+        $('.name_input_re_2').css('display', 'none');
+        nameCheck = false;
+        return;
+	}
+	
+	$.ajax({
+		type: 'post',
+		url: '${path}/member/namecheck',
+		data: {name : name},
+		success: function(result){
+			if(result == 'success'){
+		        $('.name_input_re_1').css('display', 'block');
+		        $('.name_input_re_2').css('display', 'none');
+		        nameCheck = true;
+			}else{
+		        $('.name_input_re_1').css('display', 'none');
+		        $('.name_input_re_2').css('display', 'block');
+		        nameCheck = false;
+			}
+		},//end success
+		error: function(error){
+			console.log(error);
+		}
+	});//end ajax
+});
+
+//이메일 전송 ajax
+var code = '';
+//email 정규표현식
+function mailFormCheck(email){
+	 var mailExp = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+	 return mailExp.test(email);
+}
+
+$('.mail_input').on('propertychange change keyup paste input',function(){
+	var email = $('.mail_input').val();
+	var warnMsg = $('.mail_input_box_warn');
+	
+	if(email === ''){
+		warnMsg.html("");
+	    warnMsg.attr('hidden', true);
+	    mailCheck = false;
+	    return;
+	}
+});
+
+
+$('.mail_check_button').click(function(){
+	var email = $('.mail_input').val();
+	var warnMsg = $('.mail_input_box_warn');
+	
+	if(mailFormCheck(email)){
+		warnMsg.html("이메일이 전송 되었습니다.");
+		warnMsg.css("display","inline-block");
+		warnMsg.css("color","green");
+	}else{
+		warnMsg.html("이메일 형식이 올바르지 않습니다.");
+		warnMsg.css("display",'inline-block');
+		warnMsg.css("color",'red');
+		return false;
+	}
+	
+
+	$.ajax({
+		type: 'post',
+		url: '${path}/member/mailcheck?email='+email,
+		success: function(data){
+			code = data;
+		}
+	});//end ajax
+	
+});
+</script>
+
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
 <!-- 다음 주소 -->
 /* 우편번호 검색API */
 function execDaumPostcode() {

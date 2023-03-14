@@ -48,7 +48,7 @@
 	
 	<!-- session Timeout -->
 	<session-config>
-    	<session-timeout>1</session-timeout>
+    	<session-timeout>60</session-timeout>
 	</session-config>
 <absolute-ordering />
 </web-app>

@@ -18,14 +18,27 @@ public class MemberServiceImpl implements MemberService{
 	//회원가입
 	@Override
 	public void join(MemberVO member) {
-		log.info("join service");
+		//log.info("join service");
 		dao.join(member);
 	}
 	
 	//로그인
 	@Override
 	public MemberVO login(MemberVO member) {
-		log.info("login info");
+		//log.info("login info");
 		return dao.login(member);
+	}
+	
+	//id 중복검사
+	@Override
+	public int idcheck(String id) {
+		//log.info("idcheck service");
+		return dao.idcheck(id);
+	}
+	
+	//이름체크
+	@Override
+	public int namecheck(String name) {
+		return dao.namecheck(name);
 	}
 }
